@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+
+<head>
+<title>{$title} - {$sitename}</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="description" content="This website is a Homebrew Browser repository with web-viewing capabilities." />
+<meta name="keywords" content="hbb, homebrew browser, repository" /> 
+<meta name="author" content="Luke GB" /> 
+<link rel="stylesheet" type="text/css" href="{$webroot}skins/moodswing/style.css" />
+<link rel="stylesheet" type="text/css" href="{$webroot}skins/mediaboxAdvBlack.css" />
+<script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js"></script>
+<script src="{$webroot}skins/mediaboxAdv.js"></script>
+</head>
+
+<body>
+
+<div id="mb_inline" style="display: none;">Please log in:<br /><form action="{$webroot}" method="POST">Username: <input type="text" name="uname" /><br />Password: <input type="password" name="pass" /><br /><input type="submit" name="loggingin" value="Log in" /></form></div>
+
+<div id="container">
+	<div id="top">
+		<div id="header">
+			<span class="red"><br />{$sitename}</span><br />
+			<span class="subHeader">Yet another HBB repository.</span>
+		</div>
+		<div id="menu">
+<!--			<a href="#">Lorem</a><a href="#">Ipsum</a><a href="#">Dolor</a><a href="#">Sit</a><a href="#">Amet</a>-->
+			<a href="{$webroot}">Home</a>{$extralinks}
+		</div>
+	</div>
+	<div id="body">
+		<div class="post">
+			<h1>{$title}</h1>
+			<p>
+				{$content}
+			</p>
+			<div class="postInfo"></div>
+		</div>
+	</div>
+	<div id="footer">
+		<p class="right"><a href="http://validator.w3.org/check?uri=referer">XHTML 1.1</a> <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a> <a href="http://webdesign.lanmust.org">By Mapers</a></p>Courtesy <a href="http://www.openwebdesign.org" target="_blank">Open Web Design</a>, Thanks to <a href="http://www.pyratinexr.com/" target="_blank">rosacea</a></p>
+	</div>
+</div>
+
+</body>
+
+</html>

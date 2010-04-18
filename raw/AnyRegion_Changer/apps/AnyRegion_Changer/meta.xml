@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1">
+  <name>Any Region Changer</name>
+  <coder>tona</coder>
+  <version>1.1b</version>
+  <short_description>A tool to make non-temporary changes to the Wii's settings.txt file, in particular region changes.</short_description> 
+  <long_description>
+The latest update to the shop channel BREAKS SHOP COUNTRY REGION CHANGING! Be warned that your Wii may be stuck in a certain region for the shop for the time being.
+
+The 4.2 update will brick your Korean region changed with a 003 Error brick. 
+
+AnyRegion Changer is an application which allows you to make non-temporary changes to various region and language settings on your Wii's SYSCONF and setting.txt files. You may call this a "Region Mod," i.e. the settings will persist. It also allows you to install the System Menu of another region if you so desire. 
+</long_description> 
+
+</app>
+

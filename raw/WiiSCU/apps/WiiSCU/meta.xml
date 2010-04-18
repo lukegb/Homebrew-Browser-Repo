@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<app version="1">
+		<name>WiiSCU</name>
+		<coder>Wack0</coder>
+		<version>0.23</version>
+		<short_description>Update your System Channels</short_description>
+		<long_description>Wii System Channels Updater "WiiSCU" is a modification of tona's IOS51&amp;Shop Installer to update your Wii's System Channels (and various IOSes) to the latest versions. Based on PatchMii by bushing.
+
+This version fixes the stubbed bricking with IOS60, because it grabs the older version of IOS60. Modified by illinialex24, compiled by Bionic Sonic.
+
+It also grabs version 18 of Shop Channel, modified by SifJar</long_description>
+	</app>

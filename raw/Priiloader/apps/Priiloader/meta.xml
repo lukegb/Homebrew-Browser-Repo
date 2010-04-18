@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1.2">
+	<name>Priiloader rev15</name>
+	<version>1.0</version>
+	<coder>Crediar, phpgeek, Daco</coder>
+	<short_description>Enable SM Hacks.</short_description>
+	<long_description>priiloader is a small application which places itself before the system menu.
+It's main feature is to directly boot the Homebrew Channel or a file you can install from a FAT device.
+priiloader is also able to apply memory patches the system menu to remove limitations or other things.
+Since priiloader places itself before the system menu any problems that would cause the system menu to fail are not causing your whole wii 
+to stop working.
+If autoboot is enabled and you want to access priiloader's menu simply hold RESET while powering the wii on.
+</long_description>
+</app>

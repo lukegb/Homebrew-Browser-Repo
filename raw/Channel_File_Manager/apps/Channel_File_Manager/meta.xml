@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1">
+  <name>Channel File Manager</name>
+  <coder>CashMan</coder>
+  <version>2.0 BETA 3</version>
+  <release_date>20090404190000</release_date>
+  <short_description>Gerez vos chaines Wii !</short_description>
+  <long_description>Channel File Manager is based on WAD Manager 1.3 and AnyTitle Deleter and allows you to manage your Channels of the Wii Menu. You can install and uninstall WAD files from storage devices of your choice. The homebrew can also use your Custom IOS. You must create a folder "wad" at the root of your device (SD Card, SD Gecko or USB device) and put all your WAD files.
+If you want to remove a "title" and you do not have the WAD file, please select "Wii NAND" in the choice of device.
+ATTENTION: If you have a Custom IOS installed on your Wii, make sure it is a version rev04 or higher (if it is a Custom IOS from Tona or Waninkoko).
+</long_description>
+</app>

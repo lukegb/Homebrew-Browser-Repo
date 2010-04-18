@@ -1,0 +1,119 @@
+%%%%
+Dungeon
+
+It is still a mystery how this bizarre place was created. Some claim that it
+is the playground of bored gods, whereas others maintain that it was shaped
+by all kinds of species who fled the overworld and shunned the light. No
+matter what the origin of this cave is, it is filled with riches unheard of
+as well as with ample dangers to any intruder. Few have escaped alive, and
+even fewer have kept some rest of sanity to tell the tale.
+%%%%
+Temple
+
+The Temple of some of the Gods, a place of peace and refuge from the
+insanity of the dungeon.
+%%%%
+Orcish Mines
+
+The mines of the orcs, filled with their gold, but treacherous and easy to
+get trapped in.
+%%%%
+Elven Halls
+
+Whereas most elven folk would never move into a dark subterranean complex
+like this, the deep elves did. Their halls are filled with riches but any
+passersby should be aware of the legendary magical prowess of this species.
+%%%%
+Lair
+
+Most adventurers find the lair to be an exciting change of climate. And
+indeed, there is something to be said about getting gored, mauled and
+eaten rather than sliced, burnt or stabbed.
+%%%%
+Swamp
+
+A swampy waste land, complete with ooze, muck, flies, and large slavering
+carnivorous monsters.
+%%%%
+Shoals
+
+Here be the Shoals: exotic underground beaches, salty spray and creatures
+that bite, stab, and maul.
+%%%%
+Slime Pits
+
+The amorphous realm of acids, jellies and slimes. Any trace of intelligent
+beings has long been dissolved. Still, there are rumours of great treasures
+deep down, hidden safely away in secret chambers without door or window for
+acid to leak in.
+%%%%
+Snake Pit
+
+Home of the serpent, lair of the naga.
+%%%%
+Hive
+
+You hear a many-fold buzzing. 
+%%%%
+Vaults
+
+Possibly constructed by some powerful madman, the vaults are said to be home
+to great treasures. The blood spots all around the entrance indicate that
+there is a certain amount of violence, too.
+%%%%
+Hall of Blades
+
+Once upon a time, all the daggers and axes and polearms would gather at the
+time of night and dance the waltz, dreaming of battlefields void of man and
+beast. That time is no more, yet the weapons are still there.
+%%%%
+Crypt
+
+You hear moans and shrieks of tortured souls, suffering in acts of the
+unspeakable.
+%%%%
+Tomb
+
+The Tomb of the Ancients, a place of damnation, of horrors animated 
+by the vilest necromancy.
+
+"In the depths of every heart, there is a tomb and a dungeon, though
+the lights, the music, and revelry above may cause us to forget their
+existence, and the buried ones, or prisoners whom they hide. But
+sometimes, and oftenest at midnight, those dark receptacles are flung
+wide open. In an hour like this, when the mind has a passive
+sensibility, but no active strength; when the imagination is a mirror,
+imparting vividness to all ideas, without the power of selecting or
+controlling them; then pray that your grieves may slumber, and the
+brotherhood of remorse not break their chain."
+    -Nathaniel Hawthorne
+%%%%
+Hell
+
+The hallway to the four hells, guarded by Geryon.
+%%%%
+Dis
+
+Who will stand the test of iron?
+%%%%
+Gehenna
+
+The fires of Gehenna burnt many a confident hero, and they will burn
+evermore.
+%%%%
+Cocytus
+
+A grim and frost-bitten hell.
+%%%%
+Tartarus
+
+Over time, the undead, demons and devils of this place drain all life out of
+treasure-craving visitors.
+%%%%
+Zot
+
+A region of the dungeon complex, safely locked away and referred to usually by
+madness, frenzy, lunacy. Only the most demented adventurers would dare to
+break the seal and press deeper - in the vain hope for a fabled artefact no 
+man has ever laid eyes on before.
+%%%%

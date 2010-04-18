@@ -1,0 +1,83 @@
+%%%%
+amulet
+
+A piece of jewellery.
+%%%%
+blazing lamp
+
+A lamp.
+%%%%
+bone lantern
+
+A strange lantern made out of ancient bones.
+%%%%
+book
+
+A book of magic spells. Beware, for some of the more powerful
+grimoires are not to be toyed with.
+%%%%
+crystal ball
+
+A sphere of clear crystal.
+%%%%
+deck of cards
+
+A deck of cards.
+%%%%
+gauzy fan
+
+A fan.
+%%%%
+grey disc
+
+A grey disc.
+%%%%
+nondescript stone
+
+A lump of rock.
+%%%%
+potion
+
+A small bottle of liquid.
+
+"Then gave I her, -- so tutor'd by my art, --
+ A sleeping potion; which so took effect
+ As I intended, for it wrought on her
+ The form of death: meantime I writ to Romeo
+ That he should hither come as this dire night,
+ To help to take her from her borrow'd grave,
+ Being the time the potion's force should cease."
+    -William Shakespeare, _Romeo and Juliet_
+%%%%
+ring
+
+A piece of jewellery.
+%%%%
+rod
+
+A stick imbued with magical properties.
+%%%%
+scroll
+
+A scroll of paper covered in magical writing.
+%%%%
+sealed bronze flask
+
+A heavy bronze flask, warm to the touch.
+%%%%
+silver horn
+
+A curving, roughly-chased silver horn, dulled by age.
+%%%%
+small ebony casket
+
+A small black box. I wonder what's inside?
+%%%%
+staff
+
+A stick imbued with magical properties.
+%%%%
+wand
+
+A stick. Maybe it's magical.
+%%%%

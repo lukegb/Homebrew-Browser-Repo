@@ -1,0 +1,372 @@
+# NOTE FOR PLAYERS OF OLD VERSIONS (DCSS 0.3.4 or before):
+#
+# DCSS 0.4 introduces several rather drastic changes to the interface; 
+# read 034_changes.txt for details. Uncomment these options if you want 
+# to disable them and go back to the old state: 
+# monster colours, command keys, order on the character selection screen,
+# item colours, appearance of the stat section, butchering interface, 
+# targeting interface. 
+# The options for monster glyphs and item colours don't matter for Tiles.
+# (New players should just ignore these lines.)
+#
+# include                 = 034_monster_glyphs.txt
+# inlcude                 = 034_command_keys.txt
+# classic_item_colours    = true
+# classic_hud             = true
+# use_old_selection_order = true
+# always_confirm_butcher  = true
+# target_unshifted_dirs   = true
+
+
+# Crawl Init file
+#
+# On Unix systems (such as Mac OS X, Linux and the BSDs), you must copy 
+# init.txt to ~/.crawlrc as:
+#   cp init.txt ~/.crawlrc
+#
+# Lines beginning with '#' are comments.  The basic syntax is:
+#
+# field = value         or      field.subfield = value
+#
+# Only one specification is allowed per line.
+#
+# The terms are typically case-insensitive except in the fairly obvious
+# cases (the character's name and specifying files or directories when
+# on a system that has case-sensitive filenames).
+#
+# White space is stripped from the beginning and end of the line, as 
+# well as immediately before and after the '='. If the option allows 
+# multiple comma/semicolon-separated terms (such as 
+# autopickup_exceptions), all whitespace around the separator is also 
+# trimmed. All other whitespace is left intact.
+#
+# For descriptions concerning an option consult the file 
+#    options_guide.txt 
+# in your /docs directory. Also note that the ordering of the options
+# is taken from that file; this is for presentational reasons only.
+#
+# Note that all boolean options (i.e. values of 'true' or 'false') have
+# their non-default value commented out. You can toggle these by just
+# uncommenting.
+# Options with several values, e.g. drop_mode = (multi | single),
+# usually have the first value as default.
+
+##### 1- Starting Screen ############################################
+#
+# name = Delilah
+# remember_name = false
+# use_old_selection_order = true
+# weapon = (random | short sword | hand axe | spear | mace | trident)
+# book = (fire | ice | summ | random)
+# chaos_knight = (Xom | Makhleb | random)
+# death_knight = (necromancy | Yredelemnul | random)
+# priest       = (Zin | Yredelemnul | Beogh | random)
+# race  = (Human |...| Merfolk | random)
+# class = (Fighter |...| Wanderer | random)
+# random_pick = true
+# good_random = false
+
+##### 2-  File System ###############################################
+#
+# crawl_dir  = <path>
+# morgue_dir = morgue
+# save_dir   = saves
+macro_dir  = settings/
+# sound = <regex>:<path to sound file>
+
+##### 3-  Lua Files #################################################
+#
+lua_file = lua/stash.lua
+lua_file = lua/wield.lua
+lua_file = lua/runrest.lua
+lua_file = lua/gearset.lua
+lua_file = lua/eat.lua
+lua_file = lua/trapwalk.lua
+lua_file = lua/pickup.lua
+
+# kills.lua yields more information at the cost of huge dumps.
+# lua_file = lua/kills.lua
+
+##### 4-  Interface #################################################
+#
+##### 4-a	Picking up and Dropping ###############
+#	
+autopickup = $?!+"/%
+
+# There is a long list of autopickup exceptions in
+include = autopickup_exceptions.txt
+
+# default_autopickup = false
+# autopickup_no_burden = true
+# pickup_thrown = false
+# pickup_dropped = true
+# chunks_autopickup = false
+# assign_item_slot = (forward | backward)
+#
+# drop_mode = (multi | single)
+# pickup_mode = (single | multi | auto:5)
+# drop_filter = skeleton, rotting, corpse
+# default_friendly_pickup = (none | friend | all)
+
+##### 4-b	Targetting ############################
+#
+# target_zero_exp = true
+# target_oos = false
+# target_los_first = false
+# default_target = false
+# target_unshifted_dirs = true
+
+##### 4-c	Passive Sightings #####################
+#
+# detected_monster_colour = lightred
+# detected_item_colour = green
+# remembered_monster_colour = darkgrey
+# colour_map = false
+# clean_map = true
+
+##### 4-d	Branding ##############################
+#
+friend_brand       = hi:green
+neutral_brand      = hi:lightgrey
+stab_brand         = hi:blue
+may_stab_brand     = hi:yellow
+heap_brand         = reverse
+feature_item_brand = reverse
+trap_item_brand    = reverse
+
+##### 4-e	Level Map Functions ###################
+#
+# level_map_cursor_step = 7
+# level_map_title = false
+# item_colour = false
+
+##### 4-f	Viewport Options  ###################
+#
+# view_max_width   = 33
+# view_max_height  = 21
+# view_lock_x      = false
+# view_lock_y      = false
+# view_lock        = false
+# center_on_scroll = true
+# symmetric_scroll = false
+# scroll_margin_x  = 2
+# scroll_margin_y  = 2
+# scroll_margin    = 2
+
+##### 4-g	Travel and Exploration #################
+#
+# travel_delay = 20
+# travel_avoid_terrain = shallow water
+#
+# explore_greedy   = false
+# explore_stop     = items,greedy_items,stairs,shops,altars,gates
+# explore_improved = true
+
+# tc_reachable      = blue
+# tc_dangerous      = cyan
+# tc_disconnected   = darkgrey
+# tc_excluded       = lightmagenta
+# tc_exclude_circle = red
+
+# The following options are not default. 
+#
+runrest_ignore_message = pray:
+runrest_ignore_message = You feel.*sick
+runrest_ignore_message = disappears in a puff of smoke
+runrest_ignore_message = engulfed in a cloud of smoke
+runrest_ignore_message = safely over a trap
+runrest_ignore_message = You feel.*sick
+runrest_ignore_poison  = 2:30
+runrest_ignore_monster = fish:2
+runrest_ignore_monster = butterfly:1
+# runrest_ignore_monster = swamp worm:3
+
+# trap_prompt = false
+trapwalk_safe_hp = dart:20,needle:15,arrow:35,bolt:45,spear:40,axe:45,blade:95
+
+#rest_wait_both = true
+
+# The file (travel_stoppers.txt) contains a list of travel_stop_message 
+# settings, with brief descriptions of what they do.
+include = travel_stoppers.txt
+
+##### 4-h	Stashes ###############################
+#
+# stash_tracking = (all | explicit | dropped)
+# stash_filter = 14, 4:21
+# annotate_item_class = true
+# annotate_item_dropped = true
+
+##### 4-i	Command Enhancements ##################
+#
+# auto_list    = false
+# easy_open    = false
+# easy_unequip = false
+# easy_confirm = (none | safe)
+# allow_self_target = (yes | no | prompt)
+# easy_butcher = false
+# always_confirm_butcher = true
+# prompt_for_swap        = false
+# easy_quit_item_prompts = false
+# easy_exit_menu         = false
+# sort_menus = pickup: true : basename, qualname, curse, qty
+# msg_condense_repeats = false
+
+
+##### 4-j	Messages and Display Enhancements #####
+#
+# hp_warning = 10
+# mp_warning = 0
+# hp_colour = 50:yellow, 25:red
+# mp_colour = 50:yellow, 25:red
+
+# status_caption_colour        = yellow
+# classic_hud                  = true
+# mlist_min_height             = 5
+# msg_max_height               = 10
+# mlist_allow_alternate_layout = true
+# mlist_targetting             = true
+# show_gold_turns              = true
+
+# delay_message_clear        = true
+# show_inventory_weights     = true
+# item_stack_summary_minimum = 5
+# list_rotten                = false
+
+# show_beam                  = false
+
+#####          Colours (messages and menus) #####
+#
+menu_colour_prefix_class = true
+
+# Food is colour coded in standard_colours.txt as follows:
+include = standard_colours.txt
+#
+#   yellow     = preferred food                    ($preferred)
+#   darkgrey   = cannot be eaten at all            ($inedible)
+#   lightred   = extremely dangerous, causes rot   ($rot-inducing)
+#   magenta    = mutagenic, or evil                ($mutagenic, $evil)
+#   lightgreen = poisonous                         ($poisonous)
+#   brown      = contaminated, may cause sickness  ($contaminated)
+#
+# You can change colours by using something like
+# $contaminated := magenta
+
+include = food_colouring.txt
+
+# There is elaborate colouring of items in the inventory (and other menus)
+# depending on their usefulness, taking race and other criteria into account.
+include = menu_colours.txt
+
+# Colouring of autoinscribed god gifts
+menu_colour = pickup:green:god gift
+
+# Highlight (partly) selected items
+menu_colour = inventory:white:\w \+\s
+menu_colour = inventory:white:\w \#\s
+
+# Colouring of messages
+include = messages.txt
+
+# Colouring for the notes
+menu_colour = notes:white:Reached XP level
+
+# These lines will suppress extra feedback messages from 
+# travel/shift-running.
+#
+# message_colour = mute:warning:comes into view
+# message_colour = mute:You start (searching|resting)
+# message_colour = mute:Done searching
+# message_colour = mute:(HP|Magic) restored
+# message_colour = mute:warning:Not with.*(in view|monsters around)
+
+# You can also enforce a --more-- prompt for messages
+# force_more_message = You are starting to lose your buoyancy
+
+##### 4-k	Firing Commands #######################
+#
+# fire_items_start = a
+# fire_order = launcher, return
+# fire_order += javelin / dart / stone / rock / spear / net / handaxe / dagger / club
+# fire_order += inscribed
+
+##### 4-l	Channels ##############################
+#
+# channel.multiturn = mute
+
+##### 4-m	Inscriptions ##########################
+#
+# autoinscribe = royal jell:=g
+# autoinscribe = distortion:!w
+# autoinscribe = potion.*mutation:!q
+
+##### 4-n	Macro related Options #################
+#
+# flush.failure = false
+# flush.command = true
+# flush.message = true
+# macro_meta_entry = false
+
+##### 4-t	Tile related Options ##################
+
+# All tiles specific options are in the external file
+include = tiles_options.txt
+
+
+##### 5-  Dump File #################################################
+#
+##### 5-a	Items and Kill List ###################
+#
+# kill_map = friend:you, other:you
+# dump_kill_places = (single | all | none)
+# dump_item_origins = all,artifacts,ego_arm,ego_weap,jewellery,runes
+# dump_item_origin_price = -1
+# dump_message_count = 20
+# dump_order  = header, hiscore, stats, misc, notes, inventory,
+# dump_order += turns_by_place, skills,s pells, overview, mutations,
+# dump_order += messages, screenshot, monlist, kills_by_place, kills
+
+##### 5-b	Notes #################################
+#
+# user_note_prefix=@@@
+ood_interesting = 8
+note_hp_percent = 5
+note_skill_levels = 1,5,10,15,27
+note_all_skill_levels = true
+note_skill_max  = true
+note_all_spells = true
+note_items    = rod of, acquirement, preservation, running, of Zot
+note_messages = You pass through the gate
+note_messages = [bB]anish.*Abyss
+note_messages = Your scales start
+note_messages = protects you from harm
+note_messages = You fall through a shaft
+note_monsters = orb of fire, ancient lich, Sigmund
+
+##### 6-  Miscellaneous #############################################
+#
+##### 6-a	All OS ################################
+#
+# mouse_input      = true
+# wiz_mode         = no
+# char_set         = ascii
+#
+# classic_item_colours = true
+#
+# colour.lightgray = black
+# colour.lightcyan = cyan
+# colour.yellow    = brown
+
+# See options_guide.txt for the options
+# cset_ascii, cset_ibm, cset_dec, cset_unicode, cset_any, 
+# feature, mon_glyph
+
+##### 6-b	DOS and Windows #######################
+#
+# dos_use_background_intensity = true
+# background = black
+
+
+##### 6-c   Unix ##################################
+#
+# use_fake_cursor = true

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1.0">
+	<name>AnyTitle Deleter</name>
+	<version>1.0</version>
+        <release_date>200807290000</release_date>
+	<coder>tona</coder>
+	<short_description>A menu driven Title deleter with the ability to delete System Titles and System Channels</short_description>
+	<long_description>AnyTitle Deleter is an application which allows you to completely delete (almost) any title on your Wii. Notable features:
+    * Deletes previously "Non-Removable" titles, such as IOS, MIOS, some system channels, etc.
+    * Contains extensive brick protection--You cannot delete your System Menu, its IOS, or some other necessary titles.
+    * Lists all titles installed on the system in both hex and ASCII format in a series of nice (but console-based) menus.
+    * Attempts un-installation of titles the "safe" way, and if it fails, will do a more manual "delete" upon request.</long_description>
+</app>

@@ -1,0 +1,146 @@
+                  Tiles mouseclick item interaction
+
+If you're playing with Tiles compiled, you'll find several shortcuts to 
+regular commands using mouseclicks. 
+
+
+PLAYER AVATAR
+
+left mouseclick            Pick up items on ground ('g' command). 
+                           A second click will take you to the pickup menu.
+
+right mouseclick           Character overview ('%' command).
+
+Shift + left mouseclick    Take stairs ('<' and '>' commands).
+
+Shift + right mouseclick   View religion information ('^' command).
+
+
+INVENTORY MANAGEMENT
+
+left mouseclick            Execute the most common action for this item type.
+
+  weapons:        wield    ('w')
+  misc. items:    wield    ('w')
+  armour:         Wear     ('W')
+  food:           eat      ('e')
+  scroll, manual: read     ('r')
+  potion:         quaff    ('q')
+  jewellery:      Put on   ('P')
+  spellbook:      Memorise ('M')
+  missiles:       fire     ('f')
+  corpse:         eat      ('e'), for Vampires
+
+wielded items:
+  rod:            evoke    ('v')
+  misc. item:     evoke    ('v')
+  weapon, staff:  unwield  ('w-')
+  armour,
+  jewellery:      unwield  ('w-')
+  others, as non-wielded
+
+worn items:
+  armour:         Take off ('T')
+  jewellery:      Remove   ('R')
+
+Sometimes alternative denominators are used such as "draw a card"
+instead of evoke for decks of cards, or "drink blood" instead of eat.
+
+right mouseclick           Display item information ('i' + item slot).
+
+Shift + left mouseclick    Drop item ('d').
+
+Shift + right mouseclick   Execute secondary action for some item types.
+
+  weapon:         fire    ('f')
+  non-weapon:     wield   ('w'), if corresponding spells memorised
+
+wielded items:
+  weapon:         fire    ('f')
+  anything else:  unwield ('w-')
+
+
+NON-INVENTORY ITEM MANAGEMENT
+
+left mouseclick            Pick up this item ('g').
+
+right mouseclick           Display item information.
+
+Shift + left mouseclick    'c'hop up this corpse.
+
+Shift + right mouseclick   'e'at this food item.
+
+
+MAP INTERACTION
+
+left mouseclick            Move to adjacent square.
+                           Autotravel to reachable square if currently safe.
+                           Swap places with an adjacent ally.
+                           Attack, if adjacent non-friendly monster.
+
+right mouseclick           Display grid information ('xv').
+
+Ctrl + left mouseclick     Disarm adjacent trap ('Ctrl + Dir.')
+                           Open ('O')/Close ('C') adjacent door.
+
+
+MINIMAP INTERACTION
+
+left mouseclick            Autotravel to any reachable position.
+
+holding right mouseclick   Zoom into distant area.
+
+
+MESSAGE AREA
+
+any mouseclick             Display message history ('Ctrl-P').
+
+
+STAT AREA
+
+any mouseclick             Search / Rest for a while ('5')
+
+
+MENU INTERACTION
+
+any click on tiles         Select item.
+left mouseclick            Scroll to next page.
+right mouseclick           Escape (quit menu).
+
+At inscription prompt:
+left mouseclick            Autoinscribe artefact (where applicable).
+right mouseclick           Escape (quit menu).
+
+
+                     wininit.txt description
+
+After Crawl has been run in tiles mode, it will create a wininit.txt file,
+which stores several configurable parameters.  This is separate from the
+standard init.txt file, as it can be modified at run-time via the Ctrl+V
+command.
+
+The contents of this file look like this:
+
+-- SNIP --
+Tile:DngnX=19
+Tile:DngnY=17
+Tile:MapPx=4
+Tile:MsgX=77
+Tile:MsgY=10
+Tile:WindowTop=145
+Tile:WindowLeft=22
+Tile:FontName=8x13
+Tile:FontSize=12
+-- SNIP --
+
+The above values are typical Unix settings.  On Windows, the font name will be
+something like "Courier".  If you wish to modify this file manually, here are
+what these parameters refer to:
+
+DngnX, DngnY               Size (in tiles) of the dungeon region.
+MapPx                      Width (in pixels) per square of the minimap.
+MsgX, MsgY                 Size (in characters) of the message region.
+WindowTop, WindowLeft      Location (in pixels) of the Crawl window.
+FontName                   Name of the font. 
+FontSize                   Size (in pixels) of the font.
+

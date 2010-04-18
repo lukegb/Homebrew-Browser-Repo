@@ -1,0 +1,217 @@
+######################################################
+# Miscellaneous
+# -------------
+# miscname.txt: lookup miscellaneous names
+#
+# This file contains a list of names for miscellaneous things.
+# This is currently only used for colours, writing types,
+# smells, and sounds.
+######################################################
+%%%%
+# Any word other than "glowing" itself will work here.
+glowing_adj
+
+bright
+
+brilliant
+
+dark
+
+dull
+
+faint
+
+mottled
+
+pale
+
+pulsating
+
+shimmering
+
+shining
+%%%%
+colour_name
+
+aubergine
+
+azure
+
+beige
+
+black
+
+blue
+
+bronze
+
+brown
+
+charcoal
+
+chartreuse
+
+cyan
+
+gold
+
+green
+
+grey
+
+indigo
+
+leaf green
+
+lime green
+
+magenta
+
+marigold
+
+mauve
+
+ochre
+
+orange
+
+pink
+
+purple
+
+red
+
+rubric
+
+scarlet
+
+silver
+
+umber
+
+white
+
+yellow
+%%%%
+glowing_colour_name
+
+@glowing_adj@ @colour_name@
+%%%%
+writing_adj
+
+angular
+
+blocky
+
+bold
+
+faded
+
+flowing
+
+glowing
+
+shifting
+
+sinuous
+
+spidery
+
+writhing
+%%%%
+writing_noun
+
+binary code
+
+figures
+
+glyphs
+
+hieroglyphics
+
+print-out
+
+runes
+
+scrawl
+
+sigils
+
+symbols
+
+text
+
+writing
+%%%%
+writing_name
+
+@colour_name@ @writing_noun@
+
+@glowing_colour_name@ @writing_noun@
+
+@writing_adj@ @colour_name@ @writing_noun@
+
+@writing_adj@ @writing_noun@
+%%%%
+smell_name
+
+baking bread
+
+burning hair
+
+coffee
+
+fire and brimstone
+
+salt
+
+womething weird
+
+sulphur
+
+tea
+
+wet wool
+%%%%
+# This doesn't necessarily have to make sense.  For example, a name of a
+# fruit or an insect will work here.
+roaring_animal_name
+
+albino dragon
+
+dragon
+
+eggplant
+
+frog
+
+human
+
+millipede
+
+pill bug
+
+slug
+
+yak
+%%%%
+sound_name
+
+a crunching sound
+
+a very strange noise
+
+a very strange noise indeed
+
+a voice calling someone else's name
+
+roaring flames
+
+snatches of song
+
+the distant roaring of an enraged @roaring_animal_name@
+
+the chiming of a distant gong
+
+the tinkle of an enormous bell
+%%%%

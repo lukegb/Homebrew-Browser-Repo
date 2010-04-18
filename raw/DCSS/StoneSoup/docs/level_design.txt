@@ -1,0 +1,1422 @@
+How to make levels for Dungeon Crawl Stone Soup
+===============================================
+
+Contents:  A. Introduction
+           B. Sample map
+           C. Map symbols
+           D. Header information
+           E. Conditionalising levels
+           F. Validating levels
+           G. Hints for level makers
+           H. Lua reference
+           I. Feature names
+           J. Map statistics
+           K. Portal vaults
+
+A.   Introduction
+-----------------
+
+All fixed level information resides in various .des files to be found in
+the dat directory. If you are interested in adding some vaults, say, start
+with the existing ones and modify them. Currently, the following .des files
+are in use:
+
+ altar.des    - minivaults containing altars
+ bazaar.des   - entrances to bazaar portal vaults, and bazaars proper
+ crypt.des    - Crypt:5, Tomb:1, Tomb:2, Tomb:3
+ elf.des      - Elf:7
+ entry.des    - entry vaults (each game - but not tutorial games - uses one of
+                these premade maps for the vicinity of the entrance)
+ float.des    - floating vaults
+ hells.des    - hell entrances, Geryon's vestibule, Coc:7, Tar:7, Dis:7, Geh:7
+ hive.des     - hive entrances, Hive:4
+ lab.des      - labyrinths exits and flavour vaults
+ lair.des     - lair entrances, Shoals:5, Swamp:5, Snake:5, Slime:6
+ large.des    - all regular vaults which have ORIENT:encompass/northwest etc.
+ layout.des   - Level layout code that has been moved from dungeon.cc and
+                rewritten in Lua.
+ mini.des     - minivaults (no ORIENT line at all)
+ orc.des      - orcish mine entrances, orc only vaults
+ pan.des      - vaults of the Pan demon lords, Pan minivaults
+ portal.des   - portal vaults entrances
+ temple.des   - Ecumenical Temples, and Temple entrances
+ vaults.des   - entrances for the Vaults, and Vaults:8
+ zot.des      - Zot:5
+
+
+Kinds of Vaults
+---------------
+The different kinds of vaults used by Crawl are described briefly below. In
+most cases, when the dungeon builder places a vault on a level, the rest of the
+level (assuming the vault is not a full-map vault) is generated as
+rooms+corridors. The only exceptions to this are branch entry vaults and
+minivaults, both of which are placed after the rest of the level is generated,
+and therefore do not influence level generation.
+
+* Entry vault:
+
+A map designed for D:1, which (usually) contains the primary upstair { and is
+always tagged "entry". A player starting a new game will usually land in an
+entry vault.
+
+
+* Branch entry vault, or branch portal vault:
+
+A map containing the entry to a branch - either a branch stair (such as the
+stair to the Orcish Mines), or a branch portal (a portal to Hell, say). Always
+tagged "<branchname>_entry".
+
+
+* Special level:
+
+A map for a location of significance in the game, such as the Ecumenical
+Temple, or the end of branches such as level 5 of the Snake Pit (Snake:5).
+Special level maps usually have a PLACE: attribute.
+
+
+* Random vaults:
+
+Random vaults may be randomly generated at any level in the dungeon. Random
+vault maps are selected by the dungeon builder based on their DEPTH:
+attributes.
+
+
+* Random minivaults:
+
+Random minivaults are small maps that are placed onto a level that the
+dungeon builder has already constructed fully otherwise (the level may
+include other vaults).
+
+Minivaults are distinguished from normal vaults solely by the absence
+of an ORIENT: declaration. Any map without a specified ORIENT: is a
+minivault.
+
+
+B.   Sample Map
+---------------
+
+Before going into the technical details of the level-file syntax,
+let's look at an example - a branch entry for the Ecumenical Temple -
+to see what a map definition looks like.
+
+# name below:
+NAME:    a_useless_temple_entry_02
+# header section below:
+ORIENT:  float
+CHANCE:  5
+TAGS:    temple_entry
+FLAGS:   no_rotate
+SHUFFLE: de
+SUBST:   1=12.
+MONS:    butterfly, plant
+ITEM:    stone, w:10 any book / w:90 nothing
+# actual map below:
+MAP
+xx1@2xx
+x1wWw2x
+ewwOwwd
+x2www1x
+xx1.1xx
+ENDMAP
+
+Every map consists of a name, a header and the actual map (the order
+is not important as long as the name comes first, but stick to this
+order for consistency).
+
+Lines starting with # are comments. The keywords available are
+explained briefly after the example map and in detail in the following
+sections.
+
+"ORIENT: float" tells the level builder that this entry can be anywhere on the
+                level; other ORIENT: values can force a map to one edge of the
+                level.
+"CHANCE: 5" makes the map appear less often (default is 10).
+"TAGS: temple_entry" turns the 'O' on the map into stairs to the Temple.
+"FLAGS: no_rotate" forbids rotation (but mirroring is still allowed).
+"SHUFFLE: de" may replace all 'd' with 'e' in the map.
+"SUBST: 1=12." may replace each '1' with either '1' or '2' or '.'.
+"MONS: butterfly, plant" turns all '1' into butterflies, and '2' into plants.
+"ITEM: stone" turns all 'd' into stones.
+"ITEM: w:10 any book / w:90 nothing" turns all 'e' into a book
+       (with 10% chance) or creates no object (with 90% chance).
+
+The symbols on the map:
+ x - rock wall
+ w - water (could be deep or shallow)
+ W - shallow water
+ . - plain floor
+ @ - entry point (this square will be connected to the rest of the map)
+ O - stairs to the Temple
+ 1 - first monster from the list (here butterfly) - note the SUBST: 1=12.
+ 2 - second monster from the list (plant)
+ d - first item from the list (here stones)
+ e - second item from the list (here occassionally a book)
+
+
+C.   Map symbols
+----------------
+
+Terrain
+-------
+ x - rock wall                                            (DNGN_ROCK_WALL)
+ X - permanent rock wall  - always undiggable        (DNGN_PERMAROCK_WALL)
+ c - stone wall - only affected by Shatter               (DNGN_STONE_WALL)
+ m - clear rock wall                                (DNGN_CLEAR_ROCK_WALL)
+ n - clear stone wall - only affected by Shatter   (DNGN_CLEAR_STONE_WALL)
+ o - clear permanent rock wall - always undiggable (DNGN_CLEAR_PERMAROCK_WALL)
+ v - metal wall - grounds electricity                    (DNGN_METAL_WALL)
+ b - crystal wall - reflects cold and fire       (DNGN_GREEN_CRYSTAL_WALL)
+ a - wax wall - can melt                                   (DNGN_WAX_WALL)
+
+ . - floor                                                    (DNGN_FLOOR)
+ + - closed door                                        (DNGN_CLOSED_DOOR)
+ = - secret door                                        (DNGN_SECRET_DOOR)
+
+ W - shallow water
+ w - deep water - can be randomly turned into shallow water by the
+     level-builder; you can prevent this conversion with the no_pool_fixup TAG.
+     Also, water may automatically receive water creatures! For entry
+     vaults, avoid this with the no_monster_gen TAG or KMASK.
+ l - lava - again, use the no_monster_gen TAG or KMASK for entry vaults!
+
+Features
+--------
+ @ - entry point - must be on outside edge. If you use ORIENT: float, and do
+     not use any @, the dungeon builder will connect at least one floorspace on
+     the edge of your map to the rest of the level; if there is no floorspace
+     on the edge of your map, it will be isolated.
+ }{ - Stone stairs - You must be able to reach these from each other. The
+      { upstair is also the stair on which the player will enter the
+      dungeon for entry vaults.
+ )( - Stone stairs, set 2.
+ ][ - Stone stairs, set 3.
+
+ >< - escape hatches - you can leave the level by these but will usually
+      not land on stairs/hatches
+
+ I - orcish idol (does nothing)
+
+ ^ - random trap.
+ ~ - random trap suitable for the branch and depth the map is being used.
+
+ A - Vestibule gateway (opened by Horn).
+ B - Altar. These are assigned specific types (e.g. of Zin etc) in dungeon.cc,
+     in order.
+ C - Random Altar.
+
+ F - Usually a Granite Statue, but may be Orange or Silver or Ice (1 in 100)
+ G - Granite statue (does nothing) - you can see through but not walk through.
+     Also, sight-based effects like smiting work past granite statues, as does
+     apportation.
+
+ T - Water fountain
+ U - Magic fountain
+ V - Permanently dry fountain
+ Y - Blood fountain (use sparingly!)
+
+Note: Due to the level maker having seen incremental improvements over
+the years, there are some inconsistencies. For examples, dangerous
+statues (orange, silver, ice) are now genuine monsters. In particular,
+you might see many older vaults still using the deprecated 'H' and 'S'
+glyphs which should otherwise be dispensed with.
+
+Also, the most of the other feature glyphs can be replaced with KFEAT:
+lines. The same goes for some item glyphs ('R', 'Z') which
+could be replaced by KITEM: lines.
+
+Items
+-----
+ $ - gold
+ % - normal item
+ * - higher level item (good)
+ | - acquirement-level item (almost guaranteed excellent)
+ O - place an appropriate rune here. For portal vaults, place the portal here.
+ P - maybe place a rune here (50%)
+ R - honeycomb (2/3) or royal jelly (1/3)
+ Z - the Orb of Zot
+ d-k - item array item. See section below on ITEM: arrays for more info.
+
+Monsters
+--------
+ 0 - normal monster
+ 9 - +5 depth monster
+ 8 - (+2) * 2 depth monster (aargh!). Can get golden dragons and titans
+     this way.
+ 1-7 - monster array monster. See section below on MONS: arrays for more
+     information
+
+
+D.   Header information
+-----------------------
+
+(All declarations apart from NAME: are translated to Lua function
+calls behind the scenes. See the Lua reference for more information.)
+
+NAME:     a_string
+          Each map must have a unique name. Underscores and digits are ok.
+
+ORIENT:   (float |encompass | north | northwest | ... | southeast)
+
+          Some kind of ORIENT: line is mandatory for vaults; skipping
+          ORIENT: makes your map a minivault. As a rule of thumb, if
+          you're writing a small random map, skip the ORIENT: line and
+          make it a minivault. For special levels and (branch) entry
+          vaults, you do need an ORIENT: line.
+
+          * "float": The dungeon builder puts your vault wherever it wants to.
+          * "some_direction": The vault lies along that side of the map:
+              xxxxxxxxxx       xxxxxxxxxxxxx
+              xORIENT:Nx       xORIENT:NW|..
+              x.VAULT..x       x.VAULT...|..
+              x--------x       x---------|..
+              xrest....x       xrest........
+              x...of...x       x.....of.....
+              x...levelx       x.......level
+            ...which brings us to padding. With any some_direction orientation,
+            you need 6 layers of x-padding along any level-edge that the vault
+            borders. For instance, if your map is ORIENT: north, you must have a
+            6 deep border of rock wall (or any other kind of wall) along the
+            northern, eastern, and western edges of the map.
+          * "encompass": the vault completely occupies the entire level.
+            Padding is needed on all 4 sides.
+
+          ORIENT: float vaults need no padding and give a lot of
+          flexibility to the dungeon generator; float should generally
+          be preferred to other ORIENT: settings for new vaults.
+
+
+DEPTH:    For random vaults, branch entry vaults, and minivaults, this
+          specifies the range of levels where the vault may be placed
+          in the dungeon. E.g.
+
+            DEPTH: 7-20
+
+          DEPTH: does not force a map to be placed in a particular place; it
+          applies only when the dungeon builder is looking for a random vault
+          or minivault, so you can control at what depths your vault gets
+          placed.
+
+          A simple DEPTH: declaration that does not specify a branch
+          applies to all branches. A map declared with depth 7-20 could
+          be used in the Lair, for instance. (Lair:1 will be treated as
+          a depth of 12 if the Lair entrance is on D:11.)
+
+          You can constrain a map by branch:
+
+            DEPTH: Lair:7-9
+
+          (Anywhere between levels 7-9 of the Lair, inclusive.)
+
+          You can apply multiple constraints in one DEPTH line,
+          comma-separated:
+
+            DEPTH: 7-20, !12-14
+
+          (Anywhere in the dungeon between depths 7-20, but not on levels
+          12-14.)
+
+            DEPTH: 7-20, !Orc
+
+          (Anywhere in the dungeon between depths 7-20, but never in the Orcish
+          Mines.)
+
+            DEPTH: Lair:*
+
+          (Anywhere in the Lair. Can also be expressed as "DEPTH: Lair".)
+
+          Maps that do not specify a DEPTH: attribute will inherit their depth
+          constraints from the closest preceding default-depth: line. If there
+          is no preceding default-depth directive in the .des file, the map will
+          have no DEPTH: constraint. Note that maps without a DEPTH: constraint
+          cannot be selected as random vaults or minivaults.
+
+CHANCE:   (number with 10 being default)
+          For entry vaults and any other vaults randomly picked from among
+          a set, this type of line affects the likelihood of the given vault
+          being picked in a given game. The default CHANCE: is 10. The
+          likelihood of a vault getting picked is:
+          [vault's CHANCE: / sum of all CHANCE:s of vaults of that type]
+
+PLACE:    Used to specify certain special levels. Existing special levels are:
+          Temple, Hell, Dis:7, Geh:7, Coc:7, Tar:7, Hive:4, Vault:8, Snake:5,
+          Elf:7, Slime:6, Blade, Zot:5, Tomb:1, Tomb:2, Tomb:3, Swamp:5.
+
+          PLACE can also be used to specify arbitrary places, like D:3, which
+          will force the map (or one of the maps with PLACE: D:3) to be picked
+          when D:3 is generated.
+
+          PLACE cannot be used to specify places in the Abyss, Pandemonium,
+          or Labyrinths.
+
+          PLACE can be used with random vaults and minivaults for testing them.
+
+TAGS:     Tags go an a TAGS: line and are space-separated. Valid tags are:
+          * "allow_dup": Vaults are normally used only once per game. If you
+             have a vault that can be used more than once, use allow_dup to tell
+             the dungeon builder that the vault can be reused.
+          * "dummy": this tag indicates that the vault is a stub; if the dungeon
+             builder picks a dummy vault, it pretends no vault was selected.
+             Dummies are used to reduce the probability of other vaults at the
+             same depth / place.
+          * "entry": this tag MUST be there for a vault to be pickable as an
+             entry vault.
+          * "generate_awake": Monsters placed (using MONS, KMONS) in this vault
+             will be generated awake.
+          * "patrolling": Monsters placed (using MONS, KMONS) in this vault
+             will be generated with their starting position as patrol point.
+             If not otherwise occupied (fighting, seeking) they will patrol
+             the area.
+          * "no_item_gen": Prevents random item generation in the vault.
+             Items explicitly placed by the vault are not affected.
+          * "mini_float": applicable only to minivaults, requests that
+             the dungeon builder pick random exits from the minivault and
+             connect it to the rest of the level, similar to the exit behaviour
+             for floating vaults.
+          * "no_monster_gen": Prevents random monster generation at the time of
+             the vault's creation. Highly advised for entry vaults with a
+             player-hostile geography, MUST-HAVE for those with water/lava.
+             Can be applied only to particular symbols with KMASK.
+          * "no_pool_fixup": prevents water squares next to land from being
+             randomly converted from deep water (the default) to shallow.
+          * "branch_entry" eg. "orc_entry", "lair_entry" etc.
+             If chosen, these maps will contain the stairs for that
+             branch. Use "O" to place the stairs. If a branch has very
+             few entries, a dummy entry is advisable to make sure the
+             player doesn't get bored of the same few entries recycled
+             ad nauseam.
+          * "mnoleg" or the name of some other pandemonium lord. This makes
+             the map eligible for said pan lord's lair. See pan.des.
+          * "minotaur" turns this into a labyrinth exit vault. 
+            "lab" turns this into an additional labyrinth flavour vault.
+            See lab.des for examples and details.
+          * "uniq_BAR": (uniq_ with any suffix) specifies that only one of
+             the vaults with this tag can be used in a game.
+          * "no_rotate":  Normally, the dungeon builder can, at its whim,
+             rotate your vault. This flag tells it, "hey, don't do that to my
+             vault!"
+          * "no_hmirror": Like no_rotate, but for horizontal mirroring.
+          * "no_vmirror": Like no_rotate, but for vertical mirroring.
+          * "layout": Lua code that dungeon.cc uses for generating level
+             layouts.  Do *NOT* use or mess with unless you know what
+             you're doing.
+          * "layout_foo": Indicates what sort of level layouts this vault is
+             compatible with, for vaults that don't fit in with all layouts;
+             the absence of this type of tags means it can go with any layout.
+             Multiple layout_foo tags can be used if it can be used with
+             multiple layouts.  Current values for "foo" are: rooms, city,
+             open, caves, cross, shoals, swamp, labyrinth (though currently
+             random vaults aren't placed in the last three).
+
+          Pre-0.3 Crawl distinguished between TAGS and FLAGS. 0.3 and
+          newer Crawls treat TAGS and FLAGS as synonyms.
+
+LFLAGS:   Persistent, changeable per-level flags which affect game
+          behavior (FLAGS just controls how the vault is placed); should
+          only be used for vaults with ORIENT encompass or with PLACE.
+          This causes a level's flags to be set when the level is first
+          created. These flags can later be altered using Lua markers;
+          see the slime pit vault in lair.des, and the vaults in hell.des
+          and elf.des for examples.
+
+          Valid flags are: no_tele_control, which prevents the player
+          from using teleport control; not_mappable, which prevents
+          the player from remembering where they've been (like in
+          the Abyss), and no_magic_map, which prevents magic mapping
+          from working.
+
+BFLAGS:   Persistent, changeable per-*branch* flags which affect game
+          behavior; should only be used for vaults which go on the fist
+          level of a particular branch. These flags can later be altered
+          using Lua markers; see the Tomb vaults in vaults.lua for an
+          example.
+
+          Valid flags are: no_tele_control, which prevents the player
+          from using teleport control; not_mappable, which prevents
+          the player from remembering where they've been (like in
+          the Abyss), and no_magic_map, which prevents magic mapping
+          from working.
+
+FLOORCOL: blue
+          FLOORCOL: allows you to set the floor colour for the level
+          the vault appears in. Should only be used for bazaars and
+          other portal vaults.
+
+ROCKCOL:  yellow
+          ROCKCOL: allows you to set the colour of rock walls for the
+          level the vault appears in. Should only be used for bazaars and
+          other portal vaults.
+
+ITEM:     (list of items, separated by comma)
+          These are used to help place specified items at specific places
+          within a vault. They create an array with up to 8 positions. What's
+          in the first position in the array will be used when the dungeon
+          builder sees a "d" in the vault definition, the second will be used
+          for "e"s, etc. Positions are comma-separated; several ITEM: lines
+          are possible as well. The following defines letters 'd' - 'g':
+            ITEM: stone, ring mail, meat ration, ring of hunger
+
+          Positions can contain multiple possibilities, one of which the
+          builder will choose randomly. Separate such multiple possibilities
+          using a slash. Note that "nothing" (without the quotes) is a valid
+          possibility. The random choice is done for each individual occurence
+          of the letter. You can also give possibilities a "weight," which
+          affects their chance of being picked. The default weight is 10. You
+          can abbreviate "weight:30" by "w:30". The chance to pick a
+          possibility is
+          [possibility's weight: / sum of all weight:s in that array position]
+
+          For example, the following line makes letter 'd' into a bread ration
+          with 50% chance, or apple or orange with 25% chance each:
+
+            ITEM: bread ration / w:5 apple / w:5 orange
+
+          Modifiers:
+          * "q:N" sets the item quantity to N (if N > 0). Does nothing
+             if the item is not stackable.
+          * "no_uniq" prevents the item from being turned into an artefact.
+          * "good_item" makes the builder try to make the item a good one
+            (acquirement quality). 
+          * "level:N" sets the object's item level (can't be used with
+            "good_item").  If set to -2 then the object's item level will
+            be the same as a "*" symbol item (five plus twice the
+            vault's level number).
+          * "any" by itself gives a random choice; you can combine "any" with
+            "good_item."
+          * "any book", "any misc" etc. gives a random item of that class.
+             Valid item class names are: gold, weapon, missile, armour,
+             wand, food, scroll, jewelry, potion, book, staff, orb,
+             misc, carrion. All of these are usable in map definitions,
+             apart from "orb" and "carrion".
+          * "race:race_name", where "race_name" is "elven", "dwarven"
+             or "orcish"; it can also be "none" or "no_race" to prevent
+             the item from being randomly being made racial.  Has no effect
+             if the item can't take that kind of racial setting.
+             NOTE: Can result in a non-racial item if used with "any" and
+             the chosen item isn't compatible with the desired race.
+          * "ego:ego_name", where "ego_name" is something like
+            "running", "fire_resistance", and so on; "none" can be used
+            to prevent the item from getting an ego.  The item must
+            be fully specified, so trying "any weapon ego:vorpal" or
+            "any armour ego:positive_energy" will result in an error.
+            Trying to give an ego to something which can't accept an
+            ego will also result in an error.
+
+            WARNING: While checks are done to make sure that an armour
+            ego isn't given to a weapon, a weapon ego to a missile,
+            and so on, and also to make sure that egos are only given
+            to amrours, weapons and missiles, no other checking is
+            done.  Thus it is possible to create a demonic weapon of
+            holy wrath or a helmet of running.
+ 
+          Limitations: You can't specify curse status, specificy
+          pluses or number of charges, force a randart or give fixedarts.
+          You also can't lay down corpses, skeletons, or chunks.
+
+MONS:     (list of monsters)
+          These are used to help place specific monsters at specific places
+          in a vault. They create an array with up to 7 positions. What's in
+          the first position in the array will be used when the dungeon
+          builder sees a "1" in the vault definition, the second for "2,"
+          etc. Note that if, for example, you place a 3 on the map, but your
+          MONS: line has no third position, the 3 will be filled with
+          RANDOM_MONSTER.
+          You can use weights as for ITEM: lines.
+
+          Individual monsters may be prefixed with the "generate_awake"
+          (without the quotes). Use this sparingly:
+              MONS: generate_awake giant beetle
+
+          Individual monsters may be prefixed with the "patrolling"
+          (without the quotes). Use this sparingly:
+              MONS: patrolling naga guardian
+
+          Monsters can also be given colours that override their default
+          colour. Use this *very* sparingly:
+              MONS: col:darkgrey fungus
+
+          Note that 8, 9, 0 also place monsters (see the table).
+
+          A monster can be given specific items by following the monster
+          name with a semi-colon and then with an item list as described
+          in ITEM:, but with slashes replaced with pipes and commas replaced
+          with periods.  For example:
+              MONS: orc ; katana | quick blade . chain mail | scale mail
+
+          will generate an orc wielding either a katana or a quick blade
+          and wearing either a chain mail or a scale mail.  Randarts are
+          never generated, and ego items are only generated if the ego
+          is explicitly stated.  Note that any items that the monster was
+          originally generated with will be removed and destroyed.  This
+          can be used to force a monster to have no items whatsoever:
+              MONS: orc; nothing
+
+          Items given to an orc or an elf will be made orcish or elven
+          unless the item's race type is explicitly set otherwise.
+
+          Limitations: If an item in the item list has alternatives,
+          there's no way to force all monsters dervied from that monster
+          spec to choose the same alternative.  If a monster is given
+          a random launcher, there is no way to force the ammo type to
+          match the launcher type.
+
+COLOUR:   . = green / blue:5 / red / none
+          COLOUR: allows you to attach explicit colours to any feature.
+          Explicit colours will override the default colour for that
+          feature. The example shown above colours all . (floor) in the
+          map green, blue, red, or unchanged (use the default colour).
+
+          You can use : to specify that all glyphs get the same colour:
+          COLOUR: x : red / blue
+          will colour all rock walls in the map red, or all rock
+          walls blue.
+
+          COLOUR: should be used very sparingly, and only for features
+          where it won't cause confusion (i.e.: never re-colour features
+          like lava!)
+
+SHUFFLE:  def, 12/3?
+          This allows you to randomly permute glyphs on the map. There are
+          two ways:
+
+          SHUFFLE: 123w     (i.e. list of glyphs, NOT slash-separated)
+          could, for example, swap all occurences of "1" with "2", as well as
+          swapping all "3" with "w" (or any other of the 24 possibilities).
+
+          SHUFFLE: 12/3w    (i.e. list of slash-separated blocks of same size)
+          will either do nothing or swap all "1" with "3" and then also swap
+          "2" with "w" everywhere.
+
+          Several SHUFFLE: lines can be used, and mixed with SUBST:, and the
+          shuffles and substitutions will be applied in order. You can also
+          put multiple SHUFFLEs on one line, comma-separated. Shuffles cannot
+          use , or /. All spaces are stripped before shuffling.
+
+SUBST:    ?=xc, !:bv, 1=2 1:100
+          The SUBST: directive allows you to specify a placeholder symbol
+          that is replaced with a random glyph from a set. For instance:
+
+          SUBST: ? = TUV
+          replaces occurrences of ? with one of TUV. Since whitespaces are
+          irrelevant, this is the same as
+          SUBST: ? = T U V
+
+          SUBST: ? = T:20 U V
+          makes T twice as likely to be used as U or V (the default weight
+          is 10). Note that there has to be at least one space before and
+          after T:20 and that whitespace in T:20 is not permitted.
+
+          SUBST: ? : TUV
+          replaces occurrences of ? with one of TUV, and guarantees that all
+          occurrences of ? will get the same replacement symbol.
+
+          The placeholder and replacement symbols can be any non-space,
+          printable character, including : and =, apart from commas. For
+          example, the following is valid:
+          SUBST: = = +=:123def"
+
+          SUBST: lines can safely replace symbols with themselves, as in:
+          SUBST: w = wW
+
+          Multiple SUBST: lines can be used, and mixed with SHUFFLE:, and
+          will be applied in order. Multiple substitutions can be performed
+          on one line, using commas.
+
+NSUBST:   ? = 3:w / *:l
+
+          NSUBST is similar to SUBST, replacing placeholders with
+          replacement values. Unlike SUBST, however, it allows you to
+          replace different instances of the same placeholder with
+          completely different substitutions. For instance:
+
+          ? = 3:w / *:l
+
+          replaces three occurrences (randomly selected) of ? with w
+          and all others with l.
+
+          You can use complex SUBST specifications:
+
+          ? = 3= w .:15 A / *: =+CF
+
+          This is equivalent to SUBST: ? = w .:15 A for three ? and
+          SUBST: ? : =+CF for all the others.
+
+          You can use any number of NSUBST specifiers:
+
+          ? = wW / l / A / 1234
+
+          Each specifier is preceded by the number of symbols to apply
+          it to, followed by : or = (: to use one substitution for all
+          occurrences, = to randomly pick for each occurrence). If you
+          omit the initial N: or N=, then 1= is assumed, except for the
+          last spec where *= is assumed.
+
+KFEAT:    Z = C / needle trap / antique armour shop / altar_zin
+          The KFEAT: directive allows you to specify a placeholder symbol
+          that is replaced with another symbol, named feature, trap, or
+          shop. For example, the line above will replace occurrences of Z
+          with C (random altar), a needle trap, an antique armour shop, or
+          an altar of Zin. Different instances of Z may receive different
+          replacements. To force a single replacement for all Z,  use:
+
+          KFEAT: Z : C / needle trap / antique armour shop
+
+          You'll notice that 'Z' is the symbol of the Orb of Zot. Kxxx
+          directives allow you to assign arbitrary definitions to any symbol.
+
+          KFEAT features are specified as a feature name (see section I
+          for a full list of feature names). As another example, you can
+          place a portal to the Abyss as:
+
+          KFEAT: A = enter_abyss
+
+          If you want no feature as an option in a KFEAT line, use '.' or
+          'floor'. If you do not want to specify the type of shop, use
+          'any shop' or 'random shop'.
+
+          The placeholder used by KFEAT can be shared by KITEM and KMONS;
+          see below. If the placeholder is shared, all defined Kxxxx
+          operations for the placeholder are performed. Also, all Kxxx
+          lines accept weights as for MONS or ITEM.
+
+KMONS:    ? = orc priest / w:3 deep elf priest
+
+          KMONS: allows you to specify a placeholder symbol that indicates
+          the position of a monster (or monsters).
+          Using KMONS: allows you to exceed the 7 slot limit for monsters.
+          It is also useful if you want to place a monster on a non-floor
+          square (used in association with a KFEAT:). For example,
+            KFEAT: Z = W
+            KMONS: Z = rat
+          places a rat on a shallow water square for all occurrences of Z.
+
+          KMONS: also allows you to specify alternative monsters if the
+          primary monster you want to place is unavailable (because it
+          is a unique that was already generated). For instance, if you want
+          to generate one of Terence, Michael or Erica or a generic human
+          (whoever is available, in that order, you can use):
+            KMONS: n = Terence, Michael, Erica, human
+          Or if you want to pick randomly:
+            KMONS: n = Terence / Michael / Erica, human
+
+KMASK:    Z = no_monster_gen
+
+          KMASK allows you set or unset various masks for particular
+          symbols, rather than for the entire vault like if you did it
+          with TAGS. Valid masks are
+
+          * "no_item_gen":   Prevents random item on that symbol. Items
+             explicitly placed on that symbol aren't affected.
+          * "no_monster_gen": Prevents random monster generation on that
+             symbol. MUST-HAVE for those with water/lava symbols in
+             entry vaults.
+          * "no_pool_fixup": prevents a water square next to land from being
+             randomly converted from deep water (the default) to shallow.
+          * "no_secret_doors": prevents a door from randomly being turned
+             into a secret door.
+
+          For example
+
+            KMASK: W = no_monster_gen
+
+          will prevent monsters from randomly being generated on shallow
+          water squares. Note that if shuffling and substitutions cause
+          W to end up as water 10% of the time and floor 90% of the time,
+          then those floor squares will still have no_monster_gen set, but
+          that's still a higher degree of control than you get with TAGS.
+
+          If TAGS has been used to set a mask for the entire vault, you
+          can use KMASK to remove that mask from particular symbols.
+          For instance:
+
+            TAGS:  no_monster_gen
+            KMASK: W = !no_monster_gen
+
+          would make it so that monsters are only randomly generated
+          on shallow water squares.
+
+KITEM:    ? = potion of healing / potion of restore abilities
+          KITEM: places the specified item at all occurrences of the
+          placeholder. It can be combined with KFEAT: and KMONS: lines for
+          the same placeholder.
+
+          You can use "gold" or "$" to place gold:
+            KITEM: ? = nothing / gold
+            KITEM: ? = nothing / $
+
+          You can use q: to specify quantities:
+            KITEM: ? = q:100 gold
+
+          KITEM: allows you to place multiple items on the same square:
+            KITEM: ? = bread ration, potion of water, potion of porridge
+
+MARKER:   A = feat:<feature_name> or lua:<marker_expr>
+
+          A marker ties a square on the map to a game-trigger of some
+          sort (which depends on the marker and what feature it is on).
+
+          The portals to the Hells in the Vestibule of Hell are each
+          annotated with feature markers like this:
+
+          MARKER: D=feat:enter_dis, G=feat:enter_gehenna
+
+          When the horn is sounded, the stone arch at D becomes the
+          portal to Dis, the arch at G becomes the portal to Gehenna,
+          etc. This behaviour applies only to the Vestibule of Hell.
+
+          Lua markers are used for more complex triggers, such as for
+          bazaar and labyrinth gates, rune pickup triggers for
+          the branches of Hell, fog generators, etc.
+
+          Here's a Lua marker that creates a cloud generator:
+
+          MARKER:  A = lua:fog_machine { \
+                       pow_max = 15, delay_min = 100, delay_max = 150, \
+                       size = 1, size_buildup_amnt = 29, \
+                       size_buildup_time = 1000 }
+
+          For a full explanation of the various paramenters, read the
+          header of dat/clua/lm_fog.lua.
+
+          Feature names used in markers must be names matching the
+          names in the source code. There's a full list of feature
+          names in section I (Feature names) at the end of this
+          document.
+
+          An important thing to note with markers is that they are
+          also considered map transforms along with SUBST, NSUBST and
+          SHUFFLE. You usually want to place a MARKER line after all
+          SUBST, NSUBST and SHUFFLE lines so that the final position
+          of the marker key is used. For instance, if you want to
+          attach a marker to the rune in a map when you're randomising
+          the position of the rune, this is a mistake:
+
+          MARKER: O = lua:<expr>
+          SHUFFLE: Oa/|c
+
+          because the marker will be placed at O (the rune), then O
+          may be shuffled to a different position. The correct order
+          in this case is:
+
+          SHUFFLE: Oa/|c
+          MARKER: O = lua:<expr>
+
+
+
+E.    Conditionalising levels
+-----------------------------
+
+Crawl translates level (.des) files into Lua code chunks and runs
+these chunks to produce the final level that is generated. While you
+don't need to use Lua for most levels, using Lua allows you to
+conditionalise or randomise levels with greater control.
+
+Let's take a simple example of randomisation:
+
+NAME: random_test
+# Put it on D:1 so it's easy to test.
+PLACE: D:1
+ORIENT: float
+MAP
+xxxxxxxxxxxxxxxxxxx
+x........{........x
+xxxAxxxxxBxxxxxCxxx
+xxx.xxxxx.xxxxx.xxx
+xxx@xxxxx@xxxxx@xxx
+ENDMAP
+
+Now let's say you want A, B, and C to be randomly rock or floor, but B
+should be floor if both A and C are rock. Here's one way to do it (add
+these lines to the map definition):
+
+: local asolid, csolid
+: if crawl.random2(2) == 0 then
+:   asolid = true
+:   subst("A = x")
+: else
+:   subst("A = .")
+: end
+: if crawl.random2(2) == 0 then
+:   csolid = true
+:   subst("C = x")
+: else
+:   subst("C = .")
+: end
+: if asolid and csolid then
+:   subst("B = .")
+: else
+:   subst("B = .x")
+: end
+
+This code uses crawl.random2(N) which returns a number from 0 to N-1
+(in this case, returns 0 or 1). So we give A a 50% chance of being
+rock, and the same for C. If we made both A and C rock, we force B to
+be floor, otherwise we use a subst that gives B the same 50% chance of
+being rock.
+
+You can conditionalise on various factors, such as player experience
+level:
+
+NAME: condition_002
+DEPTH: 1-27
+ORIENT: float
+: if you.xl() > 18 then
+MONS: greater mummy
+: else
+MONS: deep elf priest / deep elf sorcerer / deep elf demonologist
+: end
+MAP
+xxxxxx
+x1...x
+x1...+
+x1...x
+xxxxxx
+ENDMAP
+
+Or based on where the map is being generated:
+
+NAME: condition_003
+DEPTH: Elf:*, Orc:*
+ORIENT: float
+: if you.branch() == "Orc" then
+MONS: orc priest, orc high priest
+: else
+MONS: deep elf priest, deep elf high priest
+: end
+MAP
+xxxxxx
+x1...x
+x2...+
+x1...x
+xxxxxx
+ENDMAP
+
+When conditionalising maps, remember that your Lua code executes in
+two contexts:
+
+1) An initial compilation phase before the game starts.
+2) The actual mapgen phase when the dungeon builder is at work.
+
+In context (1), you will not get useful answers from the Crawl Lua API
+in general, because the game hasn't started. This is generally
+ignorable (as in the case above) because the compilation phase just
+checks the syntax of your Lua code. If you conditionalise your map,
+however, you may run into compile failures. Take this variant, which
+(incorrectly) attempts to conditionalise the map:
+
+NAME: condition_004
+DEPTH: Elf:*, Orc:*
+ORIENT: float
+: if you.branch() == "Orc" then
+MONS: orc priest, orc high priest
+MAP
+xxxxxx
+x1...x
+x2.I.+
+x1...x
+xxxxxx
+ENDMAP
+: elseif you.branch() == "Elf" then
+MONS: deep elf priest, deep elf high priest
+MAP
+xxxxxx
+x1...x
+x2.U.+
+x1...x
+xxxxxx
+ENDMAP
+: end
+
+This map will break the compile with the cryptic message "Must define
+map." (to compound the confusion, the line number for this error will
+be the first line number of the map following the buggy map).
+
+This error is because although the map is Elf or Orc only, at compile
+time, the branch is *neither* Elf nor Orc, so the level-compiler
+thinks you've neglected to define a map.
+
+Lua code can detect the compile phase using crawl.game_started() which
+returns true only when the player has started a game (and will return
+false when the map is being initially compiled).
+
+For more details on the available Lua API and syntax, see the Lua
+reference section.
+
+
+F.    Validating levels
+-----------------------
+
+If you have a map with lots of transforms (SUBST and SHUFFLE), and
+want to guarantee that the map is sane after the transforms, you can
+use a validation hook.
+
+To take a very contrived example:
+
+NAME: contrived_001
+PLACE: D:2
+ORIENT: float
+TAGS: no_pool_fixup
+SUBST: .=.w
+SUBST: c=x.
+MAP
+xxxxxx
+x{.+.c
+x..+>x
+xxxxxx
+ENDMAP
+
+This map has a chance of leaving the player stuck on the upstair
+without access to the rest of the level if the two floor squares near
+the doors are substituted with deep water (from the SUBST line), or
+the 'c' glyph is substituted with rock. Since a cut-off vault is
+uncool, you can force connectedness with the rest of the level:
+
+validate {{ return has_exit_from_glyph('{') }}
+
+The has_exit_from_glyph() function returns true if it is possible to
+leave the vault (without digging, etc.) from the position of the {
+glyph. (This takes things like the merfolk ability to swim into
+account, so a merfolk character may see deep water between the stair
+and door.)
+
+The validate Lua returns false (or nil) to indicate that the map is
+invalid, which will force the dungeon builder to reapply transforms
+(SUBST and SHUFFLE) and validate the map again. If the map fails
+validation enough times, the dungeon builder will discard the entire
+level and retry (this may cause a different map to be selected,
+bypassing the buggy map).
+
+Going back to the example, if you just want to ensure that the player
+can reach the > downstair, you can use:
+
+validate {{ return glyphs_connected('{', '>') }}
+
+NOTE: You cannot use the colon-prefixed syntax for validation Lua. If
+you have a big block of code, use the multiline syntax:
+
+validate {{
+    -- This level is always cool.
+    crawl.mpr("This level is guaranteed perfect!")
+    return true
+}}
+
+
+G.    Hints for level makers
+----------------------------
+
+* Technical stuff:
+
+  If your map is not a minivault or a floating vault, make sure the
+  side(s) forming the border have a rock wall padding at least 6 deep. For
+  instance, if your map is ORIENT: north, you must have a 6 deep border of
+  rock wall (or any other kind of wall) along the northern, eastern, and
+  western edges of the map. If you're doing a fullscreen map (encompass),
+  you must pad all around the map with 6 layers of wall.
+
+  You do not have to place all of the stairs unless the level is full
+  screen, in which case you must place all except the extra stairs (> and
+  <). The <> stairs can be put anywhere and in any quantities but do not
+  have to be there. Any of the other stairs which are not present in the
+  vault will be randomly placed outside it. Also generally try to avoid
+  rooms with no exit (use at least > or < to make it possible for players
+  to get away).
+
+  Minivaults can use explicit @ exits, or be completely surrounded by
+  one space of floor for accessibility. Alternatively, you can request
+  that the dungeon builder pick appropriate exits as it does for
+  floating vaults by using the "mini_float" tag.
+
+  The entry point '@' must be present for all vaults (except
+  full-screen vaults where it must not, and floating vaults and
+  minivaults where it is optional). All @ will be connected to floor
+  space in the rest of the map (multiple @ close together may merge
+  into the same exit corridor). Make sure that no part of your entry
+  level can be cut off! If no @ is present in a floating vault (and
+  there are no doors on the edge of the map, see below), the level
+  builder will use one or more random floor spaces '.' or doors at the
+  circumference as exits. Note that it is not possible to predict
+  which spaces the level builder will choose to connect; if you need
+  predictability, use explicit @ exits on the edge.
+
+  The level-builder will also implicitly treat doors and secret doors
+  on the edge of a map as explicit exits (the same as using @) and
+  connect them to the rest of the level.
+
+  Not using @ and allowing the level-builder to pick exits is
+  acceptable in floating vaults, but when you use no @'s with this
+  feature in mind, please add comments stating this - else somebody
+  may just add @'s later on. :)
+
+  Non-rectangular maps will be padded (to the right) with rock walls
+  (or with floor spaces for minivaults) for the smallest rectangle
+  containing them. Unfortunately.
+
+  Entry levels should be rather small. Their intention is to provide some
+  atmosphere for the starting room, not to get a grip on the whole of D:1.
+  Minivaults should be rather small, as well, in order to increase the
+  chances they may actually be chosen during level generation.
+
+* Randomise!
+  The level making syntax is now very supportive for making a single map
+  appear in many versions. Use the SHUFFLE: and SUBST: directives and look
+  at the existing entry vaults. Besides reducing tedium, this avoids giving
+  veterans a spoiled edge. For example, if a secret chamber with loot is
+  always at the same place, it's a no-brainer for those who know. The same
+  goes for traps. This is much less so if there are several places for the
+  chamber (or trap) and there's even a chance it doesn't exist.
+
+  You can also use CHANCE to create modified versions of the same map. In
+  order to do this, make several maps and endow each with a chance such
+  that the sum of chances add up to 10.
+
+  Randomisation does not just apply to layout: you could also have
+  different monster population sets (for example make a branch end skewed
+  for either melee or ranged opponents), or perhaps couple difficulty to
+  loot.
+
+* Not too much loot.
+  For example, entry vaults should in general have very little loot - in
+  particular no good_xxx or '*' items lest they might give incentive for
+  start-scumming. For random vaults, there needn't be loot at all and, in
+  any case, there shouldn't be too much of it. Compare with the branch ends
+  rich in treasure (Tomb:3, Cocytus etc.) to get a feeling for this.
+
+* Have a theme.
+  It is often worthwhile (to me at least) to have a theme in mind before
+  making the actual level. For entry vaults, something simple like
+  'fortress' or  'forest' may be enough. For later (or larger) maps, try
+  to think of distinguishing features your map may have. Being cool can
+  be good enough, but possessing some gameplay value (for example by being
+  easier for particular skills/capabilities like ranged attacks or
+  necromancy or Traps & Doors) is even better.
+
+* Testing your maps.
+  This is easy for entry vaults. Temporarily introducing a CHANCE: 5000
+  will make your entry appear almost always. For other vaults, you can
+  for the moment declare them as entry vaults with a huge CHANCE: as
+  above (and preferably in wizard mode). For more intricate things like
+  new branch ends, you have to resort to wizard mode and use the &~ command
+  to go directly to the place where the map is used, say Snake:5. You may want
+  to use a high CHANCE: again, if the map has alternatives (like Snake:5, or
+  Coc:7). Minivaults can also be tested by adding a PLACE: to the definition,
+  which makes it very likely that the minivault will appear in the chosen
+  level.
+
+  Larger vaults can be conjured up in wizard mode using the &L command.
+  You don't need to specify the full name of the vault, a substring which
+  uniquely determines the vault is enough. You can playtest portal vaults
+  using the &P wizard command. Branch ends can be conveniently tested with
+  the &~ command.
+
+  If the .des file syntax is incorrect, Crawl will tell you on which line of
+  which des file it found the syntax error, making for easier debugging.
+
+* Be fair!
+  Crawl is hard but try to balance your monsters. While it is true that Orc:1
+  can show an orcish knight, this is very rare. Hence it's probably a bad idea
+  to use orcish knights for an entry to the Orcish Mines.
+
+  Phrased more generally, do not use OOD (out-of-depth) monsters unless you
+  really know what you want.
+
+  Be especially fair when creating entry vaults. If your entry is too hard,
+  it might get just trashed. Keep in mind that your vault will be played
+  very very often, so even small chances of something stupid happening
+  (like creation of a really nasty monster) will kick in often enough.
+
+* Minivaults vs. random vaults.
+  Minivaults are handled very differently from regular vaults and special
+  levels. They're placed *after* normal map generation, whereas normal
+  vaults are placed before generating the rest of the level. There's no
+  way to guarantee generation of a minivault on a particular level, although
+  using a PLACE: attribute makes the dungeon builder try very hard to place
+  the minivault on the specified level. Regular vaults can always be forced to
+  appear using a PLACE: attribute.
+
+  Technically, you make a minivault like a normal floating vault but
+  without an ORIENT: line. Note that minivaults used to be exclusively of
+  size 12x12 but this restriction is gone. Still, the smaller the better.
+
+  Where possible, use minivaults instead of regular vaults, because the dungeon
+  builder has greater freedom with the rest of the level layout when using
+  minivaults.
+
+* levdes.vim.
+  If you use vim, the levdes.vim syntax highlighting script (provided
+  in the dat directory) can make level-editing far more pleasant by colouring
+  different features in maps and syntax-highlighting .des-file syntax. vim is
+  available for nearly all operating systems, including Windows.
+
+
+H.    Lua reference
+-------------------
+
+How maps are processed
+----------------------
+
+Crawl uses Lua heavily when dealing with .des files:
+
+* Level files are compiled into a series of Lua chunks. Each map can
+  have one or more Lua chunks associated with it: the prelude, the
+  body, and a validation chunk. The body is mandatory, but prelude and
+  validation chunks are necessary only if your map needs validation or
+  fancy selection criteria.
+
+* When first compiling a .des file, Crawl compiles each map's Lua
+  chunks, then compiles and runs the prelude, body and validation
+  immediately to verify that the Lua code is not broken. Lua errors at
+  this stage will cause Crawl to exit with an error message (hopefully
+  relevant). Note that the validation Lua chunk's return code is
+  completely ignored at this stage - it is only run to check for
+  syntax errors in the code.
+
+* When a new game is started, Crawl will run the Lua preludes for all
+  maps (most maps should have no prelude - map preludes slow the game
+  down). At this point, preludes can change the map's placement or
+  availability.
+
+* When the dungeon builder selects a map (based on TAGS, DEPTH,
+  PLACE), it re-runs the map prelude and the map body, applies
+  transforms (SUBST, SHUFFLE) if any, then calls the map's validation
+  Lua. If the map passes validation, the dungeon builder continues
+  with level-generation; otherwise, it restarts from the map prelude.
+
+The global prelude
+------------------
+
+Every .des file can have (at the start of the file) Lua code that is
+not associated with any specific map, but with all maps in the file.
+This is called the global prelude. The global prelude is run before
+running any other Lua code in the file, once during compilation, and
+once at start of game.
+
+You can use the global prelude to define functions and set up globals
+that the rest of the maps in the .des file use. If you have a lot of
+common code, you should probably add it to dungeon.lua instead.
+
+Syntax for using Lua in .des files
+----------------------------------
+
+* Colon-prefixed lines are individual Lua lines, extending to the end
+  of the line. E.g.
+
+   : crawl.mpr("Hello")
+
+  Colon-prefixed lines are always in the main Lua chunk, unless they occur
+  before any map definitions, in which case they go to the global prelude.
+
+* Lua blocks for the main (body) Lua
+   lua {{ <code> }}
+  or
+   lua {{
+       <code>
+   }}
+
+NOTE: Colon-prefixed lines, or lua {{ }} blocks defined before any
+map's NAME: directive will add the Lua code to the global prelude.
+
+* Lua blocks for the prelude:
+   prelude {{ <code> }}
+  or
+   prelude {{
+       <code>
+   }}
+
+* Lua blocks for the validate chunk:
+   validate {{ <code> }}
+  or
+   validate {{
+       <code>
+   }}
+
+
+Debugging Lua
+-------------
+
+Since Lua action happens in the guts of Crawl, it can be hard to tell
+what's going on. Lua debugging involves the time-honoured method of
+peppering your code with print statements:
+
+* Use error() or print() for compile-time work (i.e. when Crawl reads
+  the .des file). Note that print() just writes to the terminal and
+  keeps going, while error() forces Crawl to exit immediately (at
+  compile time; errors during level-generation are handled
+  differently).
+
+* Use crawl.mpr() for output when the game has started (at
+  level-generation time).
+
+It's very important that your finished level never croaks during
+level-generation. A Lua error at this stage is considered a validation
+failure.
+
+
+Lua API reference
+-----------------
+a. The Map.
+b. Global game state.
+c. Character information.
+
+
+Lua API - the Map
+-----------------
+
+Lua functions dealing with the map are mostly grouped under the "dgn"
+module. For convenience, .des file Lua chunks are run in an environment
+such that function calls written as:
+
+ fn(x, y, ...)
+
+are translated to
+
+ dgn.fn(map, x, y, ...)
+
+where "map" is the reference to the map that the currently executing
+Lua chunk belongs to. This is only for Lua chunks that belong to a
+map, Lua code in the global prelude does not get this treatment
+(because the global prelude is not associated with any map).
+
+Functions in the dgn module:
+
+default_depth, name, depth, place, tags, tags_remove, chance, weight,
+orient, shuffle, shuffle_remove, subst, subst_remove, map, mons, item,
+kfeat, kitem, kmons, grid, points_connected, gly_point, gly_points,
+original_map, glyphs_connected, orig_glyphs_connected, orig_gly_point,
+orig_gly_points, load_des_file, feature_number, feature_name,
+dgn_event_type, register_listener, remove_listener, remove_marker,
+num_matching_markers, feature_desc, feature_desc_at, item_from_index,
+mons_from_index, change_level_flags, change_branch_flags
+
+
+
+Lua API - global game state
+---------------------------
+
+The "crawl" module provides functions that describe the game state or
+provide utility methods.
+
+mpr, mesclr, random2, coinflip, one_chance_in, redraw_screen,
+input_line, c_input_line, getch, kbhit, flush_input, sendkeys,
+playsound, runmacro, bindkey, setopt, msgch_num, msgch_name, regex,
+message_filter, trim, split, game_started, err_trace, args
+
+
+Lua API - character information
+-------------------------------
+
+The "you" module provides functions that describe the player character.
+
+turn_is_over, spells, abilities, name, race, class, god, hp, mp,
+hunger, strength, intelligence, dexterity, xl, exp, res_poison,
+res_fire, res_cold, res_draining, res_shock, res_statdrain,
+res_mutation, res_slowing, gourmand, levitating, flying, transform,
+stop_activity, floor_items, where, branch, subdepth, absdepth
+
+
+I.   Feature Names
+------------------
+
+These are the feature names usable in MARKER declarations:
+
+unseen, rock_wall, stone_wall, closed_door, metal_wall, secret_door,
+green_crystal_wall, orcish_idol, wax_wall, permarock_wall,
+silver_statue, granite_statue, orange_crystal_statue,
+statue_reserved_1, statue_reserved_2, lava, deep_water, shallow_water,
+water_stuck, floor, exit_hell, enter_hell, open_door, trap_mechanical,
+trap_magical, trap_iii, undiscovered_trap, enter_shop,
+enter_labyrinth, stone_stairs_down_i, stone_stairs_down_ii,
+stone_stairs_down_iii, escape_hatch_down, stone_stairs_up_i,
+stone_stairs_up_ii, stone_stairs_up_iii, escape_hatch_up, enter_dis,
+enter_gehenna, enter_cocytus, enter_tartarus, enter_abyss, exit_abyss,
+stone_arch, enter_pandemonium, exit_pandemonium, transit_pandemonium,
+builder_special_wall, builder_special_floor, enter_orcish_mines,
+enter_hive, enter_lair, enter_slime_pits, enter_vaults, enter_crypt,
+enter_hall_of_blades, enter_zot, enter_temple, enter_snake_pit,
+enter_elven_halls, enter_tomb, enter_swamp, enter_shoals,
+enter_reserved_2, enter_reserved_3, enter_reserved_4,
+return_from_orcish_mines, return_from_hive, return_from_lair,
+return_from_slime_pits, return_from_vaults, return_from_crypt,
+return_from_hall_of_blades, return_from_zot, return_from_temple,
+return_from_snake_pit, return_from_elven_halls, return_from_tomb,
+return_from_swamp, return_from_shoals, return_reserved_2,
+return_reserved_3, return_reserved_4, enter_portal_vault,
+exit_portal_vault, altar_zin, altar_shining_one, altar_kikubaaqudgha,
+altar_yredelemnul, altar_xom, altar_vehumet, altar_okawaru,
+altar_makhleb, altar_sif_muna, altar_trog, altar_nemelex_xobeh,
+altar_elyvilon, altar_lugonu, altar_beogh, fountain_blue,
+fountain_sparkling, fountain_blood, dry_fountain_blue, 
+dry_fountain_sparkling, dry_fountain_blood, permadry_fountain
+
+
+J.   Map Statistics
+-------------------
+
+Full-debug Crawl builds (this does not include normal Crawl builds
+that have wizard-mode) can produce map generation statistics. To
+generate statistics, run crawl from the command-line as:
+
+crawl -mapstat
+
+This will generate 100 Crawl dungeons and report on the maps used in a
+file named "mapgen.log" in the working directory.
+
+You can change the number of dungeons to generate:
+
+crawl -mapstat 10
+
+Will generate 10 dungeons. If you merely want statistics on the
+probabilities of the levels, use:
+
+crawl -mapstat 1
+
+
+K.   Portal Vaults
+------------------
+
+Portal vaults are vaults accessed by portals in the dungeon (bazaars
+are a special case of portal vaults). You can create custom portal
+vaults as follows:
+
+Define a vault to hold the portal itself:
+
+# Bare-bones portal vault entry
+NAME: portal_generic_entry
+TAGS: allow_dup
+ORIENT: float
+MARKER: O = lua:one_way_stair { desc = "A portal to places unknown", \
+                                dst = "generic_portal" }
+KFEAT: O = enter_portal_vault
+MAP
+O
+ENDMAP
+
+Portal entries must contain a portal vault entry (enter_portal_vault).
+This feature must always have a marker that provides the portal with a
+description ("A portal to places unknown") and a destination
+("generic_portal").
+
+This will produce a portal, but attempting to use it will trigger an
+ASSERT since there's no map for the destination. So we create a
+destination map like so:
+
+NAME: portal_generic_generic
+# Tag must match dst value of portal in entry.
+TAGS: generic_portal allow_dup
+ORIENT: encompass
+MONS: ancient lich
+KFEAT: > = exit_portal_vault
+MAP
+xxxxxxxxxxx
+x111111111x
+x1A111111>x
+x111111111x
+xxxxxxxxxxx
+ENDMAP
+
+Note that the entry point into the map will be a stone arch. You must
+provide an exit to the dungeon explicitly (KFEAT: > =
+exit_portal_vault) or the player will not be able to leave.
+
+Stairs will not work right in portal vaults, do not use them.
+
+You can use multiple maps with the destination tag (generic_portal),
+and the dungeon builder will pick one at random.
