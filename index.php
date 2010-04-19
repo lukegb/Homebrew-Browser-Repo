@@ -155,9 +155,9 @@ $longdesc
       } else {
         $dolelf = 'dol';
       }
-      $iconsize = file_exists('raw/'.$fname.'/icon.png') ? filesize('raw/'.$fname.'/icon.png') : filesize('raw/'.$fname.'/apps/'.$fname.'/'.$fname.'.png');
+      $iconsize = file_exists('raw/'.$fname.'/apps/'.$fname.'/icon.png') ? filesize('raw/'.$fname.'/apps/'.$fname.'/icon.png') : filesize('raw/'.$fname.'/apps/'.$fname.'/'.$fname.'.png');
       $dolelfsize = filesize('raw/'.$fname.'/apps/'.$fname.'/boot.'.$dolelf);
-      $dlsize = filesize('zips/'.$fname.'.zip') + filesize('raw/'.$fname.'/icon.png');
+      $dlsize = filesize('zips/'.$fname.'.zip') + filesize('raw/'.$fname.'/apps/'.$fname.'/icon.png');
       $foldersize = getrecursivefoldersize('raw/'.$fname);
       $dbid = (int)getdbid($fname);
       $downloads = getdownloads($dbid);
