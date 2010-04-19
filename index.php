@@ -314,7 +314,7 @@ function getcategory($dbid) {
 
 function geticon($fname) {
   header('Content-type: icon/png');
-  readfile('raw/'.$fname.'/icon.png');
+  readfile('raw/'.$fname.'/apps/'.$fname.'/icon.png');
 }
 
 function getzip($fname) {
