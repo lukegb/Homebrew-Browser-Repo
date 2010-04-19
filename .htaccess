@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteBase /hbb
+RewriteCond %{REQUEST_URI} !/skins/
+RewriteCond %{REQUEST_URI} !/includes/
+RewriteCond %{REQUEST_URI} !/custom/
+RewriteRule ^(.*)$ index.php
+
